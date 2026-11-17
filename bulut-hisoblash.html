@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bulut hisoblash — test</title>
+<meta name="description" content="Bulut hisoblash fanidan mashq testi">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💻</text></svg>">
+<style>
+:root{
+  --bg:#f6f7f9;--card:#fff;--text:#1b1f27;--muted:#677084;--line:#e2e5eb;
+  --brand:#2f5bea;--brand-d:#2448c4;--brand-soft:#e8edfd;
+  --ok:#14804a;--ok-bg:#e6f6ed;--bad:#c43030;--bad-bg:#fdecec;--warn:#b26a00;
+  --shadow:0 1px 2px rgba(20,30,50,.06),0 4px 16px rgba(20,30,50,.05);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1218;--card:#181c25;--text:#e8ebf2;--muted:#9099ad;--line:#272d3a;
+    --brand:#6b8cff;--brand-d:#8aa3ff;--brand-soft:#212a4a;
+    --ok:#4cc58a;--ok-bg:#12281d;--bad:#ff7b7b;--bad-bg:#301818;--warn:#e5a54b;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1218;--card:#181c25;--text:#e8ebf2;--muted:#9099ad;--line:#272d3a;
+  --brand:#6b8cff;--brand-d:#8aa3ff;--brand-soft:#212a4a;
+  --ok:#4cc58a;--ok-bg:#12281d;--bad:#ff7b7b;--bad-bg:#301818;--warn:#e5a54b;
+  --shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+.wrap{max-width:860px;margin:0 auto;padding:16px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0 16px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700}
+.logo i{display:grid;place-items:center;width:38px;height:38px;border-radius:10px;background:var(--brand);color:#fff;font-style:normal;font-size:14px;letter-spacing:.5px}
+.logo small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.icon-btn{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 12px;font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:var(--shadow)}
+h1{font-size:clamp(22px,4.5vw,30px);line-height:1.25;margin:6px 0 10px}
+.eyebrow{color:var(--muted);font-size:13px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 20px}
+.chip{background:var(--brand-soft);color:var(--brand-d);padding:5px 12px;border-radius:99px;font-size:13px;font-weight:600}
+.field{margin:18px 0}
+.field>label.h{display:block;font-weight:600;margin-bottom:8px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg button{text-align:left;border:2px solid var(--line);background:var(--card);border-radius:12px;padding:12px 14px}
+.seg button b{display:block}
+.seg button span{font-size:13px;color:var(--muted)}
+.seg button[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft)}
+.check{display:flex;align-items:center;gap:10px;margin:8px 0;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--brand)}
+.btn{border:0;background:var(--brand);color:#fff;border-radius:12px;padding:13px 22px;font-weight:600;font-size:16px}
+.btn:hover{background:var(--brand-d)}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.btn.ghost:hover{background:var(--brand-soft)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.danger{background:var(--bad)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.hide{display:none!important}
+/* quiz */
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0 10px}
+.bar-in{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px;color:var(--muted)}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;color:var(--text);background:var(--card);border:1px solid var(--line);padding:5px 12px;border-radius:99px}
+.timer.low{color:var(--bad);border-color:var(--bad)}
+.prog{height:6px;background:var(--line);border-radius:9px;overflow:hidden;margin-top:8px}
+.prog>div{height:100%;background:var(--brand);width:0;transition:width .25s}
+.qnum{color:var(--muted);font-size:14px;margin-bottom:6px}
+.qtext{font-size:clamp(18px,3.6vw,21px);font-weight:650;line-height:1.4;margin:0 0 18px;white-space:pre-wrap}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;border:2px solid var(--line);background:var(--card);border-radius:12px;padding:12px 14px;transition:.12s}
+.opt:hover:not(:disabled){border-color:var(--brand);background:var(--brand-soft)}
+.opt .k{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--line);font-weight:700;font-size:13px}
+.opt.sel{border-color:var(--brand);background:var(--brand-soft)}
+.opt.sel .k{background:var(--brand);color:#fff}
+.opt.ok{border-color:var(--ok);background:var(--ok-bg)}.opt.ok .k{background:var(--ok);color:#fff}
+.opt.bad{border-color:var(--bad);background:var(--bad-bg)}.opt.bad .k{background:var(--bad);color:#fff}
+.opt:disabled{cursor:default}
+.fb{margin-top:14px;padding:10px 14px;border-radius:10px;font-weight:600;font-size:15px}
+.fb.ok{background:var(--ok-bg);color:var(--ok)}.fb.bad{background:var(--bad-bg);color:var(--bad)}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:20px}
+.grid-wrap{margin-top:18px}
+.grid-wrap summary{cursor:pointer;color:var(--muted);font-size:14px;margin-bottom:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:6px}
+.grid button{height:38px;border:1px solid var(--line);background:var(--card);border-radius:8px;font-size:13px;font-weight:600}
+.grid button.done{background:var(--brand-soft);border-color:var(--brand)}
+.grid button.ok{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.grid button.bad{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+.grid button.cur{outline:2px solid var(--text);outline-offset:1px}
+.finish-row{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:10px;flex-wrap:wrap}
+/* result */
+.score{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin:8px 0 18px}
+.ring{--p:0;width:130px;height:130px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--c,var(--brand)) calc(var(--p)*1%),var(--line) 0)}
+.ring>div{width:104px;height:104px;border-radius:50%;background:var(--card);display:grid;place-items:center;text-align:center;font-weight:800;font-size:26px;line-height:1.1}
+.ring small{display:block;font-weight:500;font-size:12px;color:var(--muted)}
+.stats{display:grid;gap:4px;font-size:15px}
+.rev{border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:12px;background:var(--card)}
+.rev .qtext{font-size:16px;margin-bottom:10px}
+.rev li{list-style:none;padding:6px 10px;border-radius:8px;margin:4px 0;font-size:15px}
+.rev ul{padding:0;margin:0}
+.rev li.ok{background:var(--ok-bg);color:var(--ok);font-weight:600}
+.rev li.bad{background:var(--bad-bg);color:var(--bad);font-weight:600}
+.tabs{display:flex;gap:8px;margin:18px 0 4px}
+.tabs button{border:1px solid var(--line);background:var(--card);padding:7px 14px;border-radius:99px;font-size:14px}
+.tabs button[aria-pressed="true"]{background:var(--brand);color:#fff;border-color:var(--brand)}
+footer{color:var(--muted);font-size:13px;text-align:center;padding:22px 0}
+dialog{border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--text);max-width:420px;width:calc(100% - 32px);padding:22px}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog h3{margin:0 0 8px}
+@media (max-width:520px){.seg{grid-template-columns:1fr}.card{padding:16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo"><i>BH</i><div>Bulut hisoblash<small>Mashq testi</small></div></div>
+    <button class="icon-btn" id="themeBtn" aria-label="Mavzuni almashtirish">🌓</button>
+  </header>
+
+  <main id="main">
+    <noscript><div class="card">Testni ishlash uchun brauzerda JavaScript yoqilgan bo‘lishi kerak.</div></noscript>
+
+    <!-- START -->
+    <section id="start" class="card hide">
+      <div class="eyebrow">Mustaqil tayyorgarlik uchun</div>
+      <h1>«Bulut hisoblash» fanidan test</h1>
+      <div class="chips">
+        <span class="chip" id="chipCount"></span>
+        <span class="chip" id="chipTime"></span>
+        <span class="chip">Bir nechta variantdan bittasi to‘g‘ri</span>
+      </div>
+
+      <div id="resumeBox" class="hide field">
+        <div class="card" style="background:var(--brand-soft);box-shadow:none">
+          <b>Tugallanmagan test topildi.</b>
+          <div class="eyebrow" id="resumeInfo" style="margin:4px 0 12px"></div>
+          <div class="row">
+            <button class="btn" id="resumeBtn">Davom ettirish</button>
+            <button class="btn ghost" id="discardBtn">Yangidan boshlash</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="h">Rejim</label>
+        <div class="seg" id="modeSeg">
+          <button data-mode="practice" aria-pressed="true"><b>Mashq</b><span>Javob darhol tekshiriladi</span></button>
+          <button data-mode="exam" aria-pressed="false"><b>Imtihon</b><span>Natija oxirida ko‘rsatiladi</span></button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="check"><input type="checkbox" id="optShuffleQ" checked> Savollarni aralashtirish</label>
+        <label class="check"><input type="checkbox" id="optShuffleO" checked> Javob variantlarini aralashtirish</label>
+        <label class="check"><input type="checkbox" id="optTimer" checked> Vaqt hisoblagichi</label>
+      </div>
+
+      <div class="field">
+        <label class="h" for="countSel">Savollar soni</label>
+        <select id="countSel" class="icon-btn" style="width:100%;max-width:260px"></select>
+      </div>
+
+      <button class="btn" id="startBtn">Testni boshlash</button>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz" class="hide">
+      <div class="bar">
+        <div class="bar-in">
+          <span id="progText"></span>
+          <span class="timer" id="timer">00:00</span>
+        </div>
+        <div class="prog"><div id="progBar"></div></div>
+      </div>
+      <div class="card">
+        <div class="qnum" id="qnum"></div>
+        <h2 class="qtext" id="qtext"></h2>
+        <div class="opts" id="opts"></div>
+        <div id="fb"></div>
+        <div class="nav">
+          <button class="btn ghost" id="prevBtn">← Oldingi</button>
+          <button class="btn" id="nextBtn">Keyingi →</button>
+        </div>
+      </div>
+      <details class="grid-wrap" open>
+        <summary>Savollar ro‘yxati</summary>
+        <div class="grid" id="grid"></div>
+      </details>
+      <div class="finish-row">
+        <span class="eyebrow">Klaviatura: 1–4 yoki A–D — tanlash, ← → — o‘tish</span>
+        <button class="btn danger" id="finishBtn">Testni yakunlash</button>
+      </div>
+    </section>
+
+    <!-- RESULT -->
+    <section id="result" class="card hide">
+      <div class="eyebrow">Natija</div>
+      <h1 id="resTitle"></h1>
+      <div class="score">
+        <div class="ring" id="ring"><div><span id="ringTxt"></span></div></div>
+        <div class="stats" id="stats"></div>
+      </div>
+      <div class="row">
+        <button class="btn" id="againBtn">Qayta boshlash</button>
+        <button class="btn ghost" id="wrongBtn">Faqat xatolarni qayta ishlash</button>
+        <button class="btn ghost" id="homeBtn">Bosh sahifa</button>
+      </div>
+      <div class="tabs" id="tabs">
+        <button data-f="wrong" aria-pressed="true">Xatolar</button>
+        <button data-f="all" aria-pressed="false">Barcha savollar</button>
+      </div>
+      <div id="review"></div>
+    </section>
+  </main>
+
+  <footer>Mashq testi · Natijalar faqat sizning brauzeringizda saqlanadi</footer>
+</div>
+
+<dialog id="dlg">
+  <h3 id="dlgTitle"></h3>
+  <p id="dlgText" style="color:var(--muted)"></p>
+  <div class="row" style="justify-content:flex-end">
+    <button class="btn ghost" id="dlgNo">Bekor qilish</button>
+    <button class="btn" id="dlgYes">Ha</button>
+  </div>
+</dialog>
+
+<script>
+const QUESTIONS = [{"q":"Bulut hisoblash nima?","o":["Kompyuter tarmog'ini simsiz ulash texnologiyasi","Dasturlarni faqat qog'ozda loyihalash usuli","Ma'lumotlarni faqat lokal diskda saqlash usuli","Resurslarni internet orqali xizmat sifatida olish"],"a":3},{"q":"NIST ta'rifiga ko'ra bulutning nechta asosiy xizmat modeli mavjud?","o":["Ikkita","Beshta","Uchta","To'rtta"],"a":2},{"q":"On-demand self-service xususiyati nimani bildiradi?","o":["Resurs faqat mahalliy ofisda ajratiladi","Resurs faqat yozma shartnoma asosida ochiladi","Resursni foydalanuvchi o'zi talab bilan oladi","Resurs faqat administrator orqali yiliga bir marta beriladi"],"a":2},{"q":"Elastiklik (elasticity) nima?","o":["Serverni qo'lda o'chirib qo'yish imkoniyati","Dastur kodining imkon qadar qisqarishi","Yuklamaga qarab resursni oshirish yoki kamaytirish","Kompyuter korpusining mustahkamligini oshirish"],"a":2},{"q":"Resurs poolingi nimani anglatadi?","o":["Har bir mijozga alohida zavod quriladi","Resurslar faqat bitta foydalanuvchiga biriktiriladi","Resurslar faqat arxivga olib qo'yiladi","Resurslar ko'p foydalanuvchi o'rtasida bo'lishiladi"],"a":3},{"q":"Measured service (o'lchanadigan xizmat) nimani ta'minlaydi?","o":["Resurs sarfini hisoblab borishni","Resursni doimo bepul berishni","Resursni foydalanuvchidan yashirishni","Resursni avtomatik o'chirib qo'yishni"],"a":0},{"q":"Pay-as-you-go modeli nimani bildiradi?","o":["Faqat qurilma narxini bir marta to'lash","Ishlatilgan miqdor uchun to'lash","Xizmatni hech qachon to'lamasdan ishlatish","Barcha xizmat uchun yillik to'lovni oldindan to'lash"],"a":1},{"q":"Public cloud nima?","o":["Davlat sirlari saqlanadigan alohida yopiq tarmoq","Faqat bitta kompaniya uchun yopiq ichki server","Internetga ulanmagan mahalliy server xonasi","Provayder boshqaradigan, ko'pchilikka ochiq bulut"],"a":3},{"q":"Private cloud nima?","o":["Hamma foydalanuvchiga ochiq bepul bulut","Provayderlar o'rtasida bo'lishiladigan umumiy bulut","Bitta tashkilot uchun ajratilgan bulut","Faqat mobil ilovalar uchun mo'ljallangan xizmat"],"a":2},{"q":"Hybrid cloud nima?","o":["Ommaviy va xususiy bulutning birgalikda ishlatilishi","Kompyuterni ikki operatsion tizimga bo'lish","Faqat ikkita virtual mashina yaratib ishlatish","Bir nechta brauzerni bir vaqtda ishlatish"],"a":0},{"q":"Multi-cloud yondashuvi nima?","o":["Tarmoqni ikkita kabelga ulash usuli","Bitta fayl nusxasini ko'paytirish usuli","Bir nechta provayder bulutidan foydalanish","Bitta serverda ko'p dastur ishlatish"],"a":2},{"q":"Bulut hisoblashning asosiy afzalligi qaysi?","o":["Internet aloqasi umuman talab qilinmasligi","Boshlang'ich xarajatning kamayishi","Xavfsizlik masalasining butunlay yo'qolishi","Apparatning butunlay yo'q bo'lib ketishi"],"a":1},{"q":"Bulut hisoblashning mumkin bo'lgan kamchiligi qaysi?","o":["Xizmatning hech qachon ishlamasligi","Resurslarni kengaytirib bo'lmasligi","Faqat bitta mamlakatda ishlashi","Provayder va internetga bog'liqlik"],"a":3},{"q":"Data center (ma'lumotlar markazi) nima?","o":["Dasturlar sotiladigan onlayn do'kon","Foydalanuvchilar ro'yxati jadvali","Serverlar joylashgan maxsus bino","Faqat kitoblar saqlanadigan kutubxona arxivi"],"a":2},{"q":"Region va Availability Zone (AZ) o'rtasidagi farq nima?","o":["Region — parol, AZ — foydalanuvchi nomi","Region — dastur, AZ — fayl turi","Region — hudud, AZ — uning ichidagi markaz","Region — kabel, AZ — simsiz tarmoq"],"a":2},{"q":"IaaS qisqartmasi nimani anglatadi?","o":["Internet as a Service","Infrastructure as a Service","Interface as a System","Integration and Security"],"a":1},{"q":"IaaS modelida provayder nimani taqdim etadi?","o":["Virtual server, tarmoq va saqlash resursini","Faqat dasturlash tili kutubxonasini yetkazishni","Tayyor mobil ilovani to'liq shaklda","Tayyor ofis dasturlari to'plamini va litsenziyalarini"],"a":0},{"q":"IaaS'da operatsion tizimni kim boshqaradi?","o":["Faqat davlat organi","Foydalanuvchi","Internet provayderi","Faqat provayder"],"a":1},{"q":"PaaS qisqartmasi nimani anglatadi?","o":["Protocol as a Server","Program as a System","Platform as a Service","Port and Security"],"a":2},{"q":"PaaS modelining asosiy vazifasi nima?","o":["Ilovani ishlab chiqish va joylash platformasini berish","Faqat tarmoq kabelini yotqizish va ulash xizmati","Faqat kompyuter qismlarini ijaraga berish xizmati","Tayyor ilovani oxirgi foydalanuvchiga ko'rsatish"],"a":0},{"q":"PaaS'da foydalanuvchi asosan nimaga e'tibor beradi?","o":["O'z ilovasining kodi va ma'lumotiga","Elektr ta'minoti tizimiga","Server apparatini ta'mirlashga","Ma'lumotlar markazi xavfsizligiga"],"a":0},{"q":"SaaS qisqartmasi nimani anglatadi?","o":["Storage and a System","Software as a Service","Security as a Service","System as a Server"],"a":1},{"q":"Quyidagilardan qaysi biri SaaS'ga misol bo'ladi?","o":["Fizik server stoykasi va uning jihozlari","Bo'sh turgan virtual server nusxasi","Brauzerda ishlaydigan elektron pochta","Docker konteyner dvigateli dasturi"],"a":2},{"q":"SaaS'da ilovani yangilashga kim javob beradi?","o":["Har bir foydalanuvchi alohida","Internet provayderi","Mahalliy kutubxona","Provayder"],"a":3},{"q":"Qaysi modelda foydalanuvchining nazorati eng yuqori?","o":["Hech qaysisida","SaaS","PaaS","IaaS"],"a":3},{"q":"Qaysi modelda foydalanuvchi eng kam texnik ish bajaradi?","o":["Lokal server","IaaS","PaaS","SaaS"],"a":3},{"q":"Heroku yoki Google App Engine qaysi modelga kiradi?","o":["Lokal tarmoq","PaaS","IaaS","SaaS"],"a":1},{"q":"Mas'uliyat taqsimoti (shared responsibility) nimani bildiradi?","o":["Barcha xavfsizlik vazifasi mijozga tegishli","Hech kim xavfsizlikka javob bermaydi","Barcha xavfsizlik vazifasi provayderga tegishli","Xavfsizlik vazifalari provayder va mijoz o'rtasida bo'linadi"],"a":3},{"q":"FaaS (serverless) modelining mohiyati nima?","o":["Funksiya hodisa bilan ishga tushadi","Kod faqat lokal kompyuterda ishlaydi","Server doim yoqilgan holda ijaraga olinadi","Fizik server mijoz uyiga yetkazib beriladi"],"a":0},{"q":"Serverless atamasida serverlar umuman yo'qmi?","o":["Ha, serverlar umuman mavjud emas","Ular faqat foydalanuvchi tomonida bor","Ular faqat mijoz telefonida ishlaydi","Yo'q, ularni provayder boshqaradi"],"a":3},{"q":"Virtualizatsiya nima?","o":["Bir nechta kompyuterni bittaga birlashtirish","Ma'lumotni qog'ozga ko'chirib saqlash","Bitta fizik resursda bir nechta virtual muhit yaratish","Dasturni boshqa dasturlash tiliga o'tkazish"],"a":2},{"q":"Hypervisor nima?","o":["Parollarni saqlovchi maxsus dastur","Fayllarni siquvchi arxivator dasturi","Virtual mashinalarni boshqaruvchi dastur","Brauzerga o'rnatiladigan kengaytma"],"a":2},{"q":"Type 1 hypervisor qanday ishlaydi?","o":["Faqat mobil qurilmalarda o'rnatiladi","Bevosita apparat ustida ishlaydi","Faqat brauzer ichida ishlay oladi","Boshqa operatsion tizim ichida ishga tushadi"],"a":1},{"q":"Type 2 hypervisor qanday ishlaydi?","o":["Faqat serverlarda o'rnatilib ishlaydi","Apparatsiz, faqat bulutda ishlaydi","Mavjud operatsion tizim ustida ishlaydi","Faqat konteynerlar ichida ishlaydi"],"a":2},{"q":"Quyidagilardan qaysi biri Type 2 hypervisor hisoblanadi?","o":["VirtualBox","Docker Hub","VMware ESXi","Microsoft Hyper-V Server"],"a":0},{"q":"Virtual mashina (VM) nima?","o":["Simsiz klaviatura va sichqoncha turi","Qo'lda yig'ilgan alohida fizik kompyuter","Internet kabelining maxsus bir turi","Dastur orqali yaratilgan kompyuter nusxasi"],"a":3},{"q":"Host operatsion tizim nima?","o":["Hypervisor o'rnatilgan asosiy tizim","Tarmoq printerining dasturi","Brauzer ichidagi veb-dastur","VM ichida ishlaydigan mehmon tizimi"],"a":0},{"q":"Guest operatsion tizim nima?","o":["Parollarni boshqarish tizimi","Bulutdagi fayl nomi","Fizik kompyuterning asosiy tizimi","VM ichida ishlaydigan tizim"],"a":3},{"q":"Virtualizatsiyaning asosiy afzalligi nima?","o":["Barcha dasturlarni bepul qilish","Apparat resurslaridan samaraliroq foydalanish","Elektr sarfini bir necha baravar oshirish","Internet tezligini cheksiz oshirish"],"a":1},{"q":"VM snapshot nima?","o":["VM'ni o'chirish uchun maxsus buyruq","VM ekranining rasmga olingan ko'rinishi","VM'ga kirish uchun parol turi","VM holatining muayyan paytdagi nusxasi"],"a":3},{"q":"VM izolyatsiyasi nimani bildiradi?","o":["VM'ni hech qachon o'chirib bo'lmaydi","Bir VM boshqasiga bevosita xalaqit bermaydi","Barcha VM bitta xotira hududini ishlatadi","VM faqat internet orqali ishlay oladi"],"a":1},{"q":"Overcommitment (ortiqcha band qilish) nima?","o":["Resursni butunlay o'chirib qo'yish","Resursni bepul tarqatib yuborish","Resursni faqat bitta VM'ga ajratish","Fizik resursdan ko'proq virtual resurs ajratish"],"a":3},{"q":"Tarmoq virtualizatsiyasiga qaysi biri misol bo'ladi?","o":["Fizik printer va uning drayveri","Monitor kabeli va uning ulagichi","USB flesh xotira va uning portlari","Virtual switch va VLAN"],"a":3},{"q":"Storage virtualizatsiyasi nimani bajaradi?","o":["Ma'lumotni faqat qog'ozga yozib beradi","Bir nechta qurilmani yagona resurs qilib ko'rsatadi","Bitta diskni bir nechta qismga bo'ladi","Fayllarni vaqti-vaqti bilan o'chirib boradi"],"a":1},{"q":"Konteyner nima?","o":["Ilova va bog'liqliklarini o'rovchi yengil muhit","To'liq operatsion tizimli og'ir virtual mashina","Faqat ma'lumotlar bazasi jadvali","Tarmoq kabelining maxsus turi"],"a":0},{"q":"Konteyner VM'dan nimasi bilan farq qiladi?","o":["Faqat Windows tizimida ishlay oladi","Host yadrosini ulashadi, shuning uchun yengil","Har biri o'z alohida yadrosini talab qiladi","Har doim VM'dan sekinroq ishlaydi"],"a":1},{"q":"Docker image nima?","o":["Konteyner yaratish uchun shablon","Foydalanuvchilar parollari ro'yxati","Ishlayotgan konteyner jarayonining o'zi","Tarmoq manzilining bir turi"],"a":0},{"q":"Docker container nima?","o":["Hujjat yozish uchun mo'ljallangan shablon","Faqat o'zgarmas statik fayllar arxivi","Image'dan ishga tushirilgan nusxa","Ma'lumotlar bazasining jadval sxemasi"],"a":2},{"q":"Dockerfile nima?","o":["Tarmoq voqealari yozib boriladigan jurnal fayli","Ishlayotgan konteynerlar ro'yxati yozilgan fayl","Parollar saqlanadigan maxfiy konfiguratsiya fayli","Image qurish ko'rsatmalari yozilgan fayl"],"a":3},{"q":"Dockerfile'dagi FROM buyrug'i nimani bildiradi?","o":["Asos (base) image'ni","Parol o'rnatishni","Portni yopishni","Fayl o'chirish buyrug'ini"],"a":0},{"q":"docker run buyrug'i nima qiladi?","o":["Docker xizmatini to'xtatib qo'yadi","Image'ni internetdan o'chiradi","Image'dan konteyner ishga tushiradi","Konteynerni butunlay o'chirib tashlaydi"],"a":2},{"q":"docker ps buyrug'i nimani ko'rsatadi?","o":["Barcha fayllarning umumiy hajmini","Foydalanuvchilarning parollarini","Ishlayotgan konteynerlar ro'yxatini","Tarmoq tezligi ko'rsatkichini"],"a":2},{"q":"docker pull buyrug'i nima qiladi?","o":["Image'ni registry'dan yuklab oladi","Image'ni serverga yuklab yuboradi","Kodni avtomatik kompilyatsiya qiladi","Konteynerni to'xtatib qo'yadi"],"a":0},{"q":"Docker Hub nima?","o":["Image'lar saqlanadigan umumiy registry","Fizik server turlari ro'yxati","Parollarni boshqaruvchi maxsus menejer","Brauzer kengaytmalari joylashgan do'kon"],"a":0},{"q":"docker build buyrug'ining vazifasi nima?","o":["Tarmoq sozlamalarini o'zgartirish","Dockerfile asosida image yaratish","Registry'ni butunlay o'chirish","Ishlayotgan konteynerni to'xtatish"],"a":1},{"q":"Docker'da -p 8080:80 parametri nimani anglatadi?","o":["Parolni 8080 qilib belgilab qo'yadi","Konteynerni 80 soniyaga to'xtatib qo'yadi","Dasturni 8080 marta ketma-ket ishga tushiradi","Host 8080-portini konteyner 80-portiga ulaydi"],"a":3},{"q":"Docker volume nima uchun ishlatiladi?","o":["Konteyner ishlash tezligini oshirish uchun","Konteyner o'chsa ham ma'lumot saqlanishi uchun","Parollarni shifrlab saqlash uchun","Brauzer ranglarini o'zgartirish uchun"],"a":1},{"q":"Docker Compose konfiguratsiyasi odatda qaysi formatda yoziladi?","o":["YAML","PDF","MP3","EXE"],"a":0},{"q":"Sandbox muhit nima uchun kerak?","o":["Real mijoz pullarini sarflash uchun","Xavfsiz tarzda sinab ko'rish uchun","Provayderni tezda almashtirish uchun","Ma'lumotlarni boshqalarga sotish uchun"],"a":1},{"q":"Bulut akkaunt ochishda odatda nima talab qilinadi?","o":["Davlat dasturi litsenziyasi","Elektron pochta va tasdiqlash","Fizik server sotib olish haqidagi shartnoma","Kabel tortish uchun maxsus ruxsat"],"a":1},{"q":"Free tier nima?","o":["Faqat pullik sinov muddati","Majburiy yillik shartnoma turi","Cheklangan hajmdagi bepul xizmat paketi","Barcha xizmatlarning cheksiz bepul varianti"],"a":2},{"q":"Yangi bulut akkauntida birinchi navbatda nimani yoqish tavsiya etiladi?","o":["Ko'p faktorli autentifikatsiyani (MFA)","Barcha pullik xizmatlarni yoqishni","Barcha portlarni hammaga ochishni","Parolni ochiq holda qoldirishni"],"a":0},{"q":"Root akkauntdan kundalik ishda foydalanish nega xavfli?","o":["U juda sekin ishlaydi","U faqat o'qish huquqiga ega","U hech narsani o'zgartira olmaydi","U cheksiz huquqqa ega"],"a":3},{"q":"Bulutda VM yaratishda image tanlash nimani bildiradi?","o":["O'rnatiladigan operatsion tizimni tanlashni","Provayder nomini o'zgartirib qo'yishni","Klaviatura tilini tanlab olishni","Ekran o'lchami va ruxsatini tanlashni"],"a":0},{"q":"VM instance type (turi) nimani belgilaydi?","o":["CPU va RAM miqdorini","Faqat tarmoq kabeli turini","Faqat foydalanuvchi nomini","Faqat fayl nomini"],"a":0},{"q":"VM'ga ulanishda SSH kalit juftligi nima uchun kerak?","o":["VM'ni o'chirib tashlash uchun","Parolsiz xavfsiz kirish uchun","Diskni formatlab chiqish uchun","VM tezligini oshirish uchun"],"a":1},{"q":"VM uchun security group nimani boshqaradi?","o":["Fayllarning nomlari ro'yxatini","Tizim sanasi va vaqtini","VM ekranining yorqinlik darajasini","Kiruvchi va chiquvchi trafik qoidalarini"],"a":3},{"q":"Ishlatilmayotgan VM'ni nima qilish xarajatni kamaytiradi?","o":["Tarmoqdan uzmasdan qoldirish","To'xtatish yoki o'chirish","Hammaga ochiq holda qoldirish","Yana bir nusxasini yaratish"],"a":1},{"q":"Object storage nima?","o":["Simsiz tarmoq qurilmasining bir turi","Jadvalli relatsion ma'lumotlar bazasi turi","Faqat operatsion tizim yuklovchi dasturi","Ma'lumotni obyekt ko'rinishida saqlovchi xizmat"],"a":3},{"q":"Object storage'dagi \"bucket\" nima?","o":["Obyektlar saqlanadigan idish","Dastur kompilyatorining nomi","Tarmoq kabelining maxsus turi","Foydalanuvchining shaxsiy paroli"],"a":0},{"q":"Object storage'da \"object\" nimalardan iborat?","o":["Ma'lumot, metama'lumot va noyob kalitdan","Faqat tarmoq manzili va portidan","Faqat foydalanuvchi nomi va parolidan","Faqat bitta harf yoki belgidan"],"a":0},{"q":"Bucket'ni ommaviy (public) qilib qo'yish qanday xavf tug'diradi?","o":["Barcha fayllar avtomatik shifrlanadi","Xarajat butunlay nolga tushadi","Ma'lumot begonalarga ochilib qoladi","Bucket tezligi bir necha baravar oshadi"],"a":2},{"q":"Object versioning nima imkon beradi?","o":["Obyektning eski versiyalarini saqlashni","Faylni siqib, hajmini kamaytirishni","Bucket'ni boshqalardan yashirib qo'yishni","Obyektni muddati o'tgach avtomatik o'chirishni"],"a":0},{"q":"Lifecycle qoidasi nima qiladi?","o":["Parollarni muntazam yangilaydi","Dasturni avtomatik kompilyatsiya qiladi","Serverni har kuni qayta yuklaydi","Eski obyektlarni arzon turga o'tkazadi yoki o'chiradi"],"a":3},{"q":"Web deploy nima?","o":["Kompyuter xotirasini tozalash","Brauzerni yangilab turish","Veb-saytni qog'ozga chop etish","Veb-ilovani serverga joylab ochish"],"a":3},{"q":"Statik veb-sayt qaysi fayllardan iborat?","o":["HTML, CSS va JavaScript","Faqat ma'lumotlar bazasidan","Faqat tarmoq drayverlaridan","Faqat operatsion tizim fayllaridan"],"a":0},{"q":"Statik saytni oddiy joylash uchun qaysi xizmat mos keladi?","o":["Object storage'dagi hosting","Optik kabel ulagichida hosting qilish","Katta hajmli GPU klasterida hosting","Fizik printer serverida hosting qilish"],"a":0},{"q":"DNS nima vazifani bajaradi?","o":["Faylni siqib, arxiv ko'rinishiga keltiradi","Domen nomini IP-manzilga aylantiradi","Parolni shifrlab, xavfsiz saqlab beradi","Dasturni mashina kodiga kompilyatsiya qiladi"],"a":1},{"q":"HTTPS nima uchun kerak?","o":["Fayllarni avtomatik ravishda o'chirish uchun","Trafikni shifrlash orqali himoyalash uchun","Serverni o'chirib qo'yish va to'xtatish uchun","Faqat reklamani ko'rsatish va tezlashtirish uchun"],"a":1},{"q":"Load balancer qanday vazifani bajaradi?","o":["Tarmoq kabelini kuchaytirib, uzatadi","So'rovlarni serverlar o'rtasida taqsimlaydi","Fayllarni avtomatik ravishda arxivlab boradi","Parollarni muntazam ravishda almashtirib turadi"],"a":1},{"q":"IAM qisqartmasi nimani anglatadi?","o":["Information and Archive Method","Internal Account Manager","Internet and Application Module","Identity and Access Management"],"a":3},{"q":"IAM nimani boshqaradi?","o":["Server haroratini","Monitor yorqinligini","Kim nimaga kira olishini","Internet narxini"],"a":2},{"q":"IAM'da \"role\" (rol) nima?","o":["Server turining nomi va markasi","Doimiy ravishda beriladigan parol turi","Vaqtincha olinadigan huquqlar to'plami","Fayl nomining maxsus bir turi"],"a":2},{"q":"IAM policy nima?","o":["Dastur kodining boshqa tilga tarjimasi","Ma'lumotlar bazasining zaxira nusxasi","Ruxsat va taqiqlar yozilgan qoidalar","Tarmoq tezligi haqidagi hisobot"],"a":2},{"q":"RBAC nimani anglatadi?","o":["Tarmoq tezligini nazorat qilish usuli","Rolga asoslangan kirishni boshqarish","Tezkor zaxira nusxa olish usuli","Qayta yuklanuvchi kod turi"],"a":1},{"q":"IAM'da least privilege prinsipi qanday qo'llanadi?","o":["Parol butunlay olib tashlanadi","Barchaga admin huquqi beriladi","Faqat zarur huquq beriladi","Barcha hisoblar bitta qilib birlashtiriladi"],"a":2},{"q":"Monitoring nima uchun kerak?","o":["Serverni o'chirib qo'yish uchun","Kodni boshqalardan yashirish uchun","Tizim holati va muammolarni kuzatish uchun","Foydalanuvchilarni cheklab qo'yish uchun"],"a":2},{"q":"Monitoring dashboard nima?","o":["Ko'rsatkichlar jamlangan vizual panel","Fizik server stoykasi chizmasi","Faqat parollar yozilgan ro'yxat sahifasi","Kabel tortish sxemasi va rejasi"],"a":0},{"q":"CPU utilization metrikasi nimani ko'rsatadi?","o":["Protsessor bandlik darajasini","Foydalanuvchi parolining kuchini","Disk rangi va ko'rinishini","Tarmoq kabelining uzunligini"],"a":0},{"q":"Alarm (ogohlantirish) qachon ishga tushadi?","o":["Faqat yangi yil kuni nishonlanganda","Har doim tasodifiy bir paytda","Faqat server o'chirib qo'yilganda","Metrika belgilangan chegaradan o'tganda"],"a":3},{"q":"Log (jurnal) nima?","o":["Dastur logotipining rasmi","Fizik ulanish kabelining turi","Tizimdagi voqealar yozuvlari","Parollar yozilgan ro'yxat"],"a":2},{"q":"Latency (kechikish) nimani o'lchaydi?","o":["Foydalanuvchilarning umumiy sonini","So'rovga javob berish vaqtini","Disk hajmining umumiy miqdorini","Server narxining oylik miqdorini"],"a":1},{"q":"Bulutda xarajat hisobi nima uchun kerak?","o":["Sarflanayotgan mablag'ni nazorat qilish uchun","Parollarni muntazam almashtirib turish uchun","Ma'lumotlarni butunlay o'chirib tashlash uchun","Dastur ishlash tezligini oshirish uchun"],"a":0},{"q":"Budget alert (byudjet ogohlantirishi) nima qiladi?","o":["Kodni avtomatik qayta yozib chiqadi","Xarajat limitga yaqinlashganda xabar beradi","Serverni tezlashtirib, quvvatini oshiradi","Hisobni darhol o'chirib yuboradi"],"a":1},{"q":"Xarajatni kamaytirishning oddiy usuli qaysi?","o":["Monitoringni butunlay o'chirish","Barcha resursni doim yoqib qo'yish","Eng katta VM turini tanlash","Keraksiz resurslarni o'chirish"],"a":3},{"q":"Resurslarga teg (tag) qo'yish xarajat hisobida nima beradi?","o":["Faylni siqishni","Resursni avtomatik tezlashtirishni","Parolni yashirishni","Xarajatni loyiha bo'yicha ajratishni"],"a":3},{"q":"Access key oshkor bo'lsa, birinchi qadam nima?","o":["Kalitni yana ommaga tarqatish","Kalitni bekor qilib, yangisini yaratish","Hech narsa qilmasdan kutib turish","Faqat parolni o'zgartirmay qoldirish"],"a":1},{"q":"Kalitlarni vaqti-vaqti bilan almashtirish (rotation) nima uchun kerak?","o":["Foydalanuvchilar sonini ko'paytirish uchun","Oshkor bo'lgan kalit xavfini kamaytirish uchun","Tezlikni ikki baravar oshirish uchun","Xarajatni butunlay nolga tushirish uchun"],"a":1},{"q":"Encryption at rest nimani himoyalaydi?","o":["Faqat kabel uzunligini","Faqat monitor ranglarini","Saqlanayotgan ma'lumotni","Faqat printer navbatini"],"a":2},{"q":"Encryption in transit nimani himoyalaydi?","o":["Dastur nomi va uning versiyasini","Diskdagi bo'sh joy hajmini","Server korpusining rangini","Tarmoqdan o'tayotgan ma'lumotni"],"a":3}];
+const MIN_PER_Q = 1;               // har bir savolga necha daqiqa (vaqt = savollar soni × shu qiymat)
+const STORE = "bulut_test_state_v1";
+const LETTERS = ["A","B","C","D","E","F"];
+
+const $ = id => document.getElementById(id);
+const fmt = s => { s=Math.max(0,Math.round(s)); const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;
+  return (h?String(h).padStart(2,"0")+":":"")+String(m).padStart(2,"0")+":"+String(x).padStart(2,"0"); };
+const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const safe = { get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}, del(k){try{localStorage.removeItem(k)}catch(e){}} };
+
+let mode = "practice";
+let S = null;       // joriy sessiya
+let tick = null;
+
+/* ---------- Mavzu ---------- */
+(function(){
+  const t = safe.get("dt_theme"); if(t) document.documentElement.dataset.theme = t;
+  $("themeBtn").onclick = () => {
+    const cur = document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme:dark)").matches ? "dark":"light");
+    const nx = cur==="dark" ? "light":"dark"; document.documentElement.dataset.theme = nx; safe.set("dt_theme",nx);
+  };
+})();
+
+/* ---------- Ko'rinishlar ---------- */
+function show(id){ ["start","quiz","result"].forEach(x=>$(x).classList.toggle("hide",x!==id)); window.scrollTo(0,0); }
+
+/* ---------- Dialog ---------- */
+function confirmBox(title,text,yes="Ha"){
+  return new Promise(res=>{
+    $("dlgTitle").textContent=title; $("dlgText").textContent=text; $("dlgYes").textContent=yes;
+    const d=$("dlg"); d.showModal();
+    const done=v=>{ d.close(); $("dlgYes").onclick=$("dlgNo").onclick=null; res(v); };
+    $("dlgYes").onclick=()=>done(true); $("dlgNo").onclick=()=>done(false);
+  });
+}
+
+/* ---------- Start ekrani ---------- */
+function initStart(){
+  const N = QUESTIONS.length;
+  $("chipCount").textContent = N + " ta savol";
+  $("chipTime").textContent = Math.round(N*MIN_PER_Q) + " daqiqa";
+  const sel = $("countSel"); sel.innerHTML="";
+  const opts = [...new Set([10,20,30,40,N].filter(x=>x<=N))].sort((a,b)=>a-b);
+  opts.forEach(n=>{ const o=document.createElement("option"); o.value=n; o.textContent = n===N ? `Barchasi (${n})` : `${n} ta`; sel.appendChild(o); });
+  sel.value = N;
+
+  document.querySelectorAll("#modeSeg button").forEach(b=>b.onclick=()=>{
+    mode=b.dataset.mode;
+    document.querySelectorAll("#modeSeg button").forEach(x=>x.setAttribute("aria-pressed",x===b));
+  });
+
+  const saved = loadSaved();
+  $("resumeBox").classList.toggle("hide", !saved);
+  if(saved){
+    const answered = Object.keys(saved.ans).length;
+    $("resumeInfo").textContent = `${saved.order.length} ta savoldan ${answered} tasiga javob berilgan · ${saved.mode==="exam"?"Imtihon":"Mashq"} rejimi`;
+  }
+  show("start");
+}
+function loadSaved(){
+  try{
+    const s = JSON.parse(safe.get(STORE)||"null");
+    if(!s || !Array.isArray(s.order) || s.finished) return null;
+    if(s.order.some(i=>!QUESTIONS[i])) return null;
+    return s;
+  }catch(e){ return null; }
+}
+function save(){ if(S) safe.set(STORE, JSON.stringify(S)); }
+
+$("startBtn").onclick = () => {
+  const n = +$("countSel").value;
+  let idx = QUESTIONS.map((_,i)=>i);
+  if($("optShuffleQ").checked) idx = shuffle(idx);
+  idx = idx.slice(0,n);
+  newSession(idx, $("optShuffleO").checked, mode, $("optTimer").checked);
+};
+function newSession(idx, shuffleOpts, m, useTimer){
+  const optOrder = {};
+  idx.forEach(i=>{ const base=QUESTIONS[i].o.map((_,k)=>k); optOrder[i] = shuffleOpts ? shuffle(base) : base; });
+  S = { order: idx, optOrder, ans:{}, cur:0, mode:m, timer:useTimer,
+        total: Math.round(idx.length*MIN_PER_Q*60), started: Date.now(), deadline: Date.now()+Math.round(idx.length*MIN_PER_Q*60)*1000,
+        finished:false };
+  save(); startQuiz();
+}
+$("resumeBtn").onclick = () => { S = loadSaved(); if(!S) return initStart(); 
+  if(S.timer && Date.now()>=S.deadline){ finish(true); return; } startQuiz(); };
+$("discardBtn").onclick = async () => { if(await confirmBox("Yangidan boshlash","Saqlangan jarayon o‘chiriladi.","O‘chirish")){ safe.del(STORE); initStart(); } };
+
+/* ---------- Test jarayoni ---------- */
+function startQuiz(){
+  show("quiz");
+  buildGrid(); render();
+  clearInterval(tick);
+  $("timer").classList.toggle("hide", !S.timer);
+  if(S.timer){ updateTimer(); tick = setInterval(updateTimer,1000); }
+}
+function updateTimer(){
+  const left = (S.deadline-Date.now())/1000;
+  $("timer").textContent = fmt(left);
+  $("timer").classList.toggle("low", left<=300);
+  if(left<=0){ clearInterval(tick); finish(true); }
+}
+function qAt(pos){ return QUESTIONS[S.order[pos]]; }
+function correctShown(pos){ const i=S.order[pos]; return S.optOrder[i].indexOf(QUESTIONS[i].a); }
+
+function render(){
+  const pos=S.cur, q=qAt(pos), i=S.order[pos], total=S.order.length;
+  const answered = S.ans[pos]!==undefined;
+  const lock = S.mode==="practice" && answered;
+  $("qnum").textContent = `Savol ${pos+1} / ${total}`;
+  $("qtext").textContent = q.q;
+  $("progText").textContent = `Javob berilgan: ${Object.keys(S.ans).length} / ${total}`;
+  $("progBar").style.width = (Object.keys(S.ans).length/total*100)+"%";
+  const box=$("opts"); box.innerHTML="";
+  const cs = correctShown(pos);
+  S.optOrder[i].forEach((orig,k)=>{
+    const b=document.createElement("button"); b.className="opt"; b.type="button";
+    b.innerHTML=`<span class="k">${LETTERS[k]}</span><span></span>`; b.lastChild.textContent=q.o[orig];
+    if(S.mode==="practice" && answered){
+      if(k===cs) b.classList.add("ok"); else if(k===S.ans[pos]) b.classList.add("bad");
+    } else if(S.ans[pos]===k) b.classList.add("sel");
+    b.disabled = lock;
+    b.onclick=()=>choose(k);
+    box.appendChild(b);
+  });
+  const fb=$("fb"); fb.innerHTML="";
+  if(S.mode==="practice" && answered){
+    const ok=S.ans[pos]===cs; const d=document.createElement("div");
+    d.className="fb "+(ok?"ok":"bad");
+    d.textContent = ok ? "✓ To‘g‘ri!" : "✗ Noto‘g‘ri. To‘g‘ri javob: " + LETTERS[cs] + ") " + q.o[QUESTIONS[i].a];
+    fb.appendChild(d);
+  }
+  $("prevBtn").disabled = pos===0;
+  $("nextBtn").textContent = pos===total-1 ? "Yakunlash" : "Keyingi →";
+  updateGrid();
+}
+function choose(k){
+  const pos=S.cur;
+  if(S.mode==="practice" && S.ans[pos]!==undefined) return;
+  S.ans[pos]=k; save(); render();
+}
+function go(p){ if(p<0||p>=S.order.length) return; S.cur=p; save(); render(); window.scrollTo({top:0,behavior:"smooth"}); }
+$("prevBtn").onclick=()=>go(S.cur-1);
+$("nextBtn").onclick=()=>{ if(S.cur===S.order.length-1) askFinish(); else go(S.cur+1); };
+$("finishBtn").onclick=askFinish;
+
+function buildGrid(){
+  const g=$("grid"); g.innerHTML="";
+  S.order.forEach((_,p)=>{ const b=document.createElement("button"); b.type="button"; b.textContent=p+1; b.onclick=()=>go(p); g.appendChild(b); });
+}
+function updateGrid(){
+  [...$("grid").children].forEach((b,p)=>{
+    b.className="";
+    if(S.ans[p]!==undefined){
+      if(S.mode==="practice") b.classList.add(S.ans[p]===correctShown(p)?"ok":"bad"); else b.classList.add("done");
+    }
+    if(p===S.cur) b.classList.add("cur");
+  });
+}
+async function askFinish(){
+  const left = S.order.length - Object.keys(S.ans).length;
+  const msg = left ? `Javob berilmagan savollar: ${left} ta. Baribir yakunlaysizmi?` : "Barcha savollarga javob berdingiz. Yakunlaysizmi?";
+  if(await confirmBox("Testni yakunlash", msg, "Yakunlash")) finish(false);
+}
+
+/* ---------- Natija ---------- */
+let lastResult=null;
+function finish(timeUp){
+  clearInterval(tick);
+  const total=S.order.length; let ok=0,bad=0;
+  S.order.forEach((_,p)=>{ if(S.ans[p]===undefined) return; S.ans[p]===correctShown(p) ? ok++ : bad++; });
+  const skipped = total-ok-bad;
+  const used = Math.min((Date.now()-S.started)/1000, S.timer?S.total:Infinity);
+  S.finished=true; safe.del(STORE);
+  lastResult={ok,bad,skipped,total,used,timeUp,session:S};
+  renderResult();
+}
+function renderResult(){
+  const {ok,bad,skipped,total,used,timeUp}=lastResult;
+  const pct=Math.round(ok/total*100);
+  show("result");
+  $("resTitle").textContent = timeUp ? "Vaqt tugadi" : (pct>=86?"A’lo natija!":pct>=71?"Yaxshi natija":pct>=56?"Qoniqarli":"Yana mashq qiling");
+  const ring=$("ring"); ring.style.setProperty("--p",pct);
+  ring.style.setProperty("--c", pct>=71?"var(--ok)":pct>=56?"var(--warn)":"var(--bad)");
+  $("ringTxt").innerHTML=`${pct}%<small>${ok} / ${total}</small>`;
+  $("stats").innerHTML=`<div>✓ To‘g‘ri: <b>${ok}</b></div><div>✗ Noto‘g‘ri: <b>${bad}</b></div><div>— Javobsiz: <b>${skipped}</b></div><div>⏱ Sarflangan vaqt: <b>${fmt(used)}</b></div>`;
+  $("wrongBtn").classList.toggle("hide", bad+skipped===0);
+  setTab(bad+skipped===0?"all":"wrong");
+}
+let tab="wrong";
+function setTab(f){
+  tab=f; document.querySelectorAll("#tabs button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.f===f));
+  const R=lastResult.session, box=$("review"); box.innerHTML="";
+  let shown=0;
+  R.order.forEach((qi,p)=>{
+    const q=QUESTIONS[qi], cs=R.optOrder[qi].indexOf(q.a), my=R.ans[p];
+    const right = my===cs;
+    if(f==="wrong" && right) return;
+    shown++;
+    const d=document.createElement("div"); d.className="rev";
+    const h=document.createElement("div"); h.className="qtext"; h.textContent=`${p+1}. ${q.q}`; d.appendChild(h);
+    const ul=document.createElement("ul");
+    R.optOrder[qi].forEach((orig,k)=>{
+      const li=document.createElement("li"); li.textContent=`${LETTERS[k]}) ${q.o[orig]}`;
+      if(k===cs){ li.className="ok"; li.textContent+="  ✓"; }
+      else if(k===my){ li.className="bad"; li.textContent+="  ✗ (sizning javobingiz)"; }
+      ul.appendChild(li);
+    });
+    d.appendChild(ul);
+    if(my===undefined){ const n=document.createElement("div"); n.className="eyebrow"; n.style.marginTop="6px"; n.textContent="Javob berilmagan"; d.appendChild(n); }
+    box.appendChild(d);
+  });
+  if(!shown){ box.innerHTML='<div class="rev">Xatolar yo‘q — barakalla! 🎉</div>'; }
+}
+document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>setTab(b.dataset.f));
+$("againBtn").onclick=()=>{ const s=lastResult.session; 
+  let idx=QUESTIONS.map((_,i)=>i); if(s.order.length<QUESTIONS.length){ idx=shuffle(idx).slice(0,s.order.length);} else if($("optShuffleQ").checked) idx=shuffle(idx);
+  newSession(idx,$("optShuffleO").checked,s.mode,s.timer); };
+$("wrongBtn").onclick=()=>{ const s=lastResult.session;
+  const idx=s.order.filter((qi,p)=>s.ans[p]!==s.optOrder[qi].indexOf(QUESTIONS[qi].a));
+  newSession(shuffle(idx),$("optShuffleO").checked,s.mode,s.timer); };
+$("homeBtn").onclick=initStart;
+
+/* ---------- Klaviatura ---------- */
+document.addEventListener("keydown",e=>{
+  if($("quiz").classList.contains("hide") || $("dlg").open || e.ctrlKey||e.metaKey||e.altKey) return;
+  const k=e.key.toLowerCase();
+  const n = "1234".includes(k)&&k ? +k-1 : ["a","b","c","d"].indexOf(k);
+  if(n>=0 && n<qAt(S.cur).o.length){ choose(n); }
+  else if(e.key==="ArrowRight") $("nextBtn").click();
+  else if(e.key==="ArrowLeft" && S.cur>0) go(S.cur-1);
+});
+
+/* ---------- Ishga tushirish ---------- */
+initStart();
+</script>
+</body>
+</html>
